@@ -6,6 +6,7 @@ const moment = require('moment-timezone');
 const jwt = require('jwt-simple');
 const APIError = require('../utils/APIError');
 const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
+const boom = require('boom');
 
 /**
 * User Roles
@@ -193,17 +194,7 @@ userSchema.statics = {
    */
   checkDuplicateEmail(error) {
     if (error.name === 'MongoError' && error.code === 11000) {
-      return new APIError({
-        message: 'Validation Error',
-        errors: [{
-          field: 'email',
-          location: 'body',
-          messages: ['"email" already exists'],
-        }],
-        status: httpStatus.CONFLICT,
-        isPublic: true,
-        stack: error.stack,
-      });
+      return boom.conflict('Duplicate email');
     }
     return error;
   },
