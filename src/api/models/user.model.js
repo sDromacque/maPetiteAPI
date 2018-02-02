@@ -38,18 +38,10 @@ const userSchema = new mongoose.Schema({
     index: true,
     trim: true,
   },
-  services: {
-    facebook: String,
-    google: String,
-  },
   role: {
     type: String,
     enum: roles,
     default: 'user',
-  },
-  picture: {
-    type: String,
-    trim: true,
   },
 }, {
   timestamps: true,
@@ -82,7 +74,7 @@ userSchema.pre('save', async function save(next) {
 userSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt'];
+    const fields = ['id', 'name', 'email', 'role', 'createdAt'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

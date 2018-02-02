@@ -3,6 +3,7 @@ const User = require('../models/user.model');
 const RefreshToken = require('../models/refreshToken.model');
 const moment = require('moment-timezone');
 const { jwtExpirationInterval } = require('../../config/vars');
+const boom = require('boom');
 
 /**
 * Returns a formated object with tokens
@@ -44,24 +45,7 @@ exports.login = async (req, res, next) => {
     const userTransformed = user.transform();
     return res.json({ token, user: userTransformed });
   } catch (error) {
-    return next(error);
-  }
-};
-
-/**
- * login with an existing user or creates a new one if valid accessToken token
- * Returns jwt token
- * @public
- */
-exports.oAuth = async (req, res, next) => {
-  try {
-    const { user } = req;
-    const accessToken = user.token();
-    const token = generateTokenResponse(user, accessToken);
-    const userTransformed = user.transform();
-    return res.json({ token, user: userTransformed });
-  } catch (error) {
-    return next(error);
+    return next(boom.unauthorized('Access is required'));
   }
 };
 
@@ -80,6 +64,6 @@ exports.refresh = async (req, res, next) => {
     const response = generateTokenResponse(user, accessToken);
     return res.json(response);
   } catch (error) {
-    return next(error);
+    return next(boom.unauthorized('Incorrect email or refreshToken'));
   }
 };

@@ -2,13 +2,33 @@ const httpStatus = require('http-status');
 const passport = require('passport');
 const User = require('../models/user.model');
 const APIError = require('../utils/APIError');
+const boom = require('boom');
+const _ = require('lodash');
 
 const ADMIN = 'admin';
 const LOGGED_USER = '_loggedUser';
 
+/**
+ * Check if user is logged before check ACL
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+const islogged = (req, res, next) => async (err, user, info) => {
+  if (!_.isNil(info)) {
+    return next(boom.unauthorized('Wrong token or expired token'));
+  }
+  return next();
+};
+
 const handleJWT = (req, res, next, roles) => async (err, user, info) => {
   const error = err || info;
   const logIn = Promise.promisify(req.logIn);
+
+  if (!roles.includes(user.role)) {
+    return next(boom.unauthorized());
+  }
+
   const apiError = new APIError({
     message: error ? error.message : 'Unauthorized',
     status: httpStatus.UNAUTHORIZED,
@@ -35,9 +55,7 @@ const handleJWT = (req, res, next, roles) => async (err, user, info) => {
   } else if (err || !user) {
     return next(apiError);
   }
-
   req.user = user;
-
   return next();
 };
 
@@ -50,5 +68,8 @@ exports.authorize = (roles = User.roles) => (req, res, next) =>
     handleJWT(req, res, next, roles),
   )(req, res, next);
 
-exports.oAuth = service =>
-  passport.authenticate(service, { session: false });
+exports.islogged = () => (req, res, next) =>
+  passport.authenticate(
+    'jwt', { session: false },
+    islogged(req, res, next),
+  )(req, res, next);

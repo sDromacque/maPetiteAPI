@@ -3,7 +3,6 @@ const boom = require('boom');
 
 module.exports = (err, req, res, next) => {
   let boomError = {};
-
   const joinError = err.message === 'validation error' ? 'joinError' : undefined;
 
   switch (joinError || err.name) {

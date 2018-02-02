@@ -106,12 +106,8 @@ describe('Users API', async () => {
         .send(user)
         .expect(httpStatus.CONFLICT)
         .then((res) => {
-          const { field } = res.body.errors[0];
-          const { location } = res.body.errors[0];
-          const { messages } = res.body.errors[0];
-          expect(field).to.be.equal('email');
-          expect(location).to.be.equal('body');
-          expect(messages).to.include('"email" already exists');
+          expect(res.body).to.have.property('error');
+          expect(res.body).to.have.property('message');
         });
     });
 
@@ -124,12 +120,9 @@ describe('Users API', async () => {
         .send(user)
         .expect(httpStatus.BAD_REQUEST)
         .then((res) => {
-          const { field } = res.body.errors[0];
-          const { location } = res.body.errors[0];
-          const { messages } = res.body.errors[0];
-          expect(field).to.be.equal('email');
-          expect(location).to.be.equal('body');
-          expect(messages).to.include('"email" is required');
+          expect(res.body.data).to.be.a('array').to.not.empty;
+          expect(res.body).to.have.property('message');
+          expect(res.body.message).to.include('validation error');
         });
     });
 
@@ -315,100 +308,6 @@ describe('Users API', async () => {
     });
   });
 
-  describe('PUT /v1/users/:userId', () => {
-    it('should replace user', async () => {
-      delete dbUsers.branStark.password;
-      const id = (await User.findOne(dbUsers.branStark))._id;
-
-      return request(app)
-        .put(`/v1/users/${id}`)
-        .set('Authorization', `Bearer ${adminAccessToken}`)
-        .send(user)
-        .expect(httpStatus.OK)
-        .then((res) => {
-          delete user.password;
-          expect(res.body).to.include(user);
-          expect(res.body.role).to.be.equal('user');
-        });
-    });
-
-    it('should report error when email is not provided', async () => {
-      const id = (await User.findOne({}))._id;
-      delete user.email;
-
-      return request(app)
-        .put(`/v1/users/${id}`)
-        .set('Authorization', `Bearer ${adminAccessToken}`)
-        .send(user)
-        .expect(httpStatus.BAD_REQUEST)
-        .then((res) => {
-          const { field } = res.body.errors[0];
-          const { location } = res.body.errors[0];
-          const { messages } = res.body.errors[0];
-          expect(field).to.be.equal('email');
-          expect(location).to.be.equal('body');
-          expect(messages).to.include('"email" is required');
-        });
-    });
-
-    it('should report error user when password length is less than 6', async () => {
-      const id = (await User.findOne({}))._id;
-      user.password = '12345';
-
-      return request(app)
-        .put(`/v1/users/${id}`)
-        .set('Authorization', `Bearer ${adminAccessToken}`)
-        .send(user)
-        .expect(httpStatus.BAD_REQUEST)
-        .then((res) => {
-          const { field } = res.body.errors[0];
-          const { location } = res.body.errors[0];
-          const { messages } = res.body.errors[0];
-          expect(field).to.be.equal('password');
-          expect(location).to.be.equal('body');
-          expect(messages).to.include('"password" length must be at least 6 characters long');
-        });
-    });
-
-    it('should report error "User does not exist" when user does not exists', () => {
-      return request(app)
-        .put('/v1/users/palmeiras1914')
-        .set('Authorization', `Bearer ${adminAccessToken}`)
-        .expect(httpStatus.NOT_FOUND)
-        .then((res) => {
-          expect(res.body.code).to.be.equal(404);
-          expect(res.body.message).to.be.equal('User does not exist');
-        });
-    });
-
-    it('should report error when logged user is not the same as the requested one', async () => {
-      const id = (await User.findOne({ email: dbUsers.branStark.email }))._id;
-
-      return request(app)
-        .put(`/v1/users/${id}`)
-        .set('Authorization', `Bearer ${userAccessToken}`)
-        .expect(httpStatus.FORBIDDEN)
-        .then((res) => {
-          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
-          expect(res.body.message).to.be.equal('Forbidden');
-        });
-    });
-
-    it('should not replace the role of the user (not admin)', async () => {
-      const id = (await User.findOne({ email: dbUsers.jonSnow.email }))._id;
-      const role = 'admin';
-
-      return request(app)
-        .put(`/v1/users/${id}`)
-        .set('Authorization', `Bearer ${userAccessToken}`)
-        .send(admin)
-        .expect(httpStatus.OK)
-        .then((res) => {
-          expect(res.body.role).to.not.be.equal(role);
-        });
-    });
-  });
-
   describe('PATCH /v1/users/:userId', () => {
     it('should update user', async () => {
       delete dbUsers.branStark.password;
@@ -515,39 +414,6 @@ describe('Users API', async () => {
         .then((res) => {
           expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
           expect(res.body.message).to.be.equal('Forbidden');
-        });
-    });
-  });
-
-  describe('GET /v1/users/profile', () => {
-    it('should get the logged user\'s info', () => {
-      delete dbUsers.jonSnow.password;
-
-      return request(app)
-        .get('/v1/users/profile')
-        .set('Authorization', `Bearer ${userAccessToken}`)
-        .expect(httpStatus.OK)
-        .then((res) => {
-          expect(res.body).to.include(dbUsers.jonSnow);
-        });
-    });
-
-    it('should report error without stacktrace when accessToken is expired', async () => {
-      // fake time
-      const clock = sinon.useFakeTimers();
-      const expiredAccessToken = (await User.findAndGenerateToken(dbUsers.branStark)).accessToken;
-
-      // move clock forward by minutes set in config + 1 minute
-      clock.tick((JWT_EXPIRATION * 60000) + 60000);
-
-      return request(app)
-        .get('/v1/users/profile')
-        .set('Authorization', `Bearer ${expiredAccessToken}`)
-        .expect(httpStatus.UNAUTHORIZED)
-        .then((res) => {
-          expect(res.body.code).to.be.equal(httpStatus.UNAUTHORIZED);
-          expect(res.body.message).to.be.equal('jwt expired');
-          expect(res.body).to.not.have.a.property('stack');
         });
     });
   });
