@@ -185,7 +185,7 @@ userSchema.statics = {
    * @returns {Error|APIError}
    */
   checkDuplicateEmail(error) {
-    if (error.name === 'MongoError' && error.code === 11000) {
+    if (error.name === 'BulkWriteError' && error.code === 11000) {
       return boom.conflict('Duplicate email');
     }
     return error;
