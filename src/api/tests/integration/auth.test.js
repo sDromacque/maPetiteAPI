@@ -77,7 +77,7 @@ describe.skip('Authentication API', () => {
         .then((res) => {
           expect(res.body.data).to.be.a('array').to.not.empty;
           expect(res.body).to.have.property('message');
-          expect(res.body.message).to.include('validation error');
+          expect(res.body.message).to.include('email must be a valid email');
         });
     });
 
@@ -89,7 +89,7 @@ describe.skip('Authentication API', () => {
         .then((res) => {
           expect(res.body.data).to.be.a('array').to.have.lengthOf(2);
           expect(res.body).to.have.property('message');
-          expect(res.body.message).to.include('validation error');
+          expect(res.body.message).to.include('email is required,password is required');
         });
     });
   });
@@ -117,7 +117,7 @@ describe.skip('Authentication API', () => {
         .then((res) => {
           expect(res.body.data).to.be.a('array').to.have.lengthOf(2);
           expect(res.body).to.have.property('message');
-          expect(res.body.message).to.include('validation error');
+          expect(res.body.message).to.include('email is required,password is required');
         });
     });
 
@@ -130,7 +130,7 @@ describe.skip('Authentication API', () => {
         .then((res) => {
           expect(res.body.data).to.be.a('array').to.not.empty;
           expect(res.body).to.have.property('message');
-          expect(res.body.message).to.include('validation error');
+          expect(res.body.message).to.include('email must be a valid email');
         });
     });
 
@@ -180,7 +180,7 @@ describe.skip('Authentication API', () => {
         .then((res) => {
           expect(res.body.data).to.be.a('array').to.have.lengthOf(2);
           expect(res.body).to.have.property('message');
-          expect(res.body.message).to.include('validation error');
+          expect(res.body.message).to.include('email is required,refreshToken is required');
         });
     });
   });

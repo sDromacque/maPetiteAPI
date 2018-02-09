@@ -44,7 +44,7 @@ router
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .get(islogged(), authorize(), validate(listUsers), controller.list)
+  .get(islogged(), authorize(ADMIN), validate(listUsers), controller.list)
   /**
    * @api {post} v1/users Create User
    * @apiDescription Create a new user
@@ -90,6 +90,7 @@ router
    * @apiSuccess {String}  role       User's role
    * @apiSuccess {Date}    createdAt  Timestamp
    *
+   * @apiError (Bad request 400)  Bad request  Malformed object id
    * @apiError (Unauthorized 401) Unauthorized Only authenticated users can access the data
    * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can access the data
    * @apiError (Not Found 404)    NotFound     User does not exist
@@ -121,6 +122,7 @@ router
    * @apiError (Unauthorized 401) Unauthorized Only authenticated users can modify the data
    * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can modify the data
    * @apiError (Not Found 404)    NotFound     User does not exist
+   * @apiError (Conflict 409)     Conflict     Duplicate email
    */
   .patch(authorize(LOGGED_USER), validate(updateUser), controller.update)
   /**

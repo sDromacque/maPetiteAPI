@@ -112,19 +112,9 @@ userSchema.statics = {
    */
   async get(id) {
     try {
-      let user;
-
-      if (mongoose.Types.ObjectId.isValid(id)) {
-        user = await this.findById(id).exec();
-      }
-      if (user) {
-        return user;
-      }
-
-      throw new APIError({
-        message: 'User does not exist',
-        status: httpStatus.NOT_FOUND,
-      });
+      const user = await this.findById(id);
+      if (!user) throw boom.notFound();
+      return user;
     } catch (error) {
       throw error;
     }
@@ -185,9 +175,10 @@ userSchema.statics = {
    * @returns {Error|APIError}
    */
   checkDuplicateEmail(error) {
-    if (error.name === 'BulkWriteError' && error.code === 11000) {
+    if (error.code === 11000) {
       return boom.conflict('Duplicate email');
     }
+
     return error;
   },
 

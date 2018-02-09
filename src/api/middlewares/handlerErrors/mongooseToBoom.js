@@ -1,16 +1,19 @@
 const _ = require('lodash');
 const boom = require('boom');
 
+const convertErrors = errors => errors.map(error => error.messages[0].replace(/"/g, ''));
+
 module.exports = (err, req, res, next) => {
   let boomError = {};
   const joinError = err.message === 'validation error' ? 'joinError' : undefined;
 
+  console.log(err)
   switch (joinError || err.name) {
     case 'joinError': {
-      const error = new Error(err.message);
+      const error = new Error(convertErrors(err.errors));
       boomError = boom.boomify(error, {
         statusCode: err.status,
-        data: _.map(err.errors, 'field'),
+        data: [].concat(..._.map(err.errors, ('field'))),
       });
       break;
     }
@@ -19,7 +22,15 @@ module.exports = (err, req, res, next) => {
       break;
     case 'CastError':
       // Malformed id
-      boomError = boom.badRequest(null, [err.path]);
+      boomError = boom.badRequest('Malformed id', [err.path]);
+      break;
+    case 'SyntaxError':
+      // SyntaxError
+      boomError = boom.badRequest('Error in JSON');
+      break;
+    case 'APIError':
+      // JWT error
+      boomError = boom.forbidden('Access not allowed');
       break;
     case 'ValidationError':
       // Handle conflict error

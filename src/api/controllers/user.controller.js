@@ -12,7 +12,7 @@ exports.load = async (req, res, next, id) => {
     req.locals = { user };
     return next();
   } catch (error) {
-    return next();
+    return next(error);
   }
 };
 
@@ -31,26 +31,6 @@ exports.create = async (req, res, next) => {
     const user = new User(req.body);
     const savedUser = await user.save();
     res.status(httpStatus.CREATED);
-    res.json(savedUser.transform());
-  } catch (error) {
-    next(User.checkDuplicateEmail(error));
-  }
-};
-
-/**
- * Replace existing user
- * @public
- */
-exports.replace = async (req, res, next) => {
-  try {
-    const { user } = req.locals;
-    const newUser = new User(req.body);
-    const ommitRole = user.role !== 'admin' ? 'role' : '';
-    const newUserObject = omit(newUser.toObject(), '_id', ommitRole);
-
-    await user.update(newUserObject, { override: true, upsert: true });
-    const savedUser = await User.findById(user._id);
-
     res.json(savedUser.transform());
   } catch (error) {
     next(User.checkDuplicateEmail(error));

@@ -6,7 +6,7 @@ const boom = require('boom');
 const _ = require('lodash');
 
 const ADMIN = 'admin';
-const LOGGED_USER = '_loggedUser';
+const LOGGED_USER = 'user';
 
 /**
  * Check if user is logged before check ACL
