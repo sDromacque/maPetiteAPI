@@ -7,11 +7,17 @@ const jwt = require('jwt-simple');
 const APIError = require('../utils/APIError');
 const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
 const boom = require('boom');
+const _ = require('lodash');
 
 /**
 * User Roles
 */
-const roles = ['user', 'admin'];
+const roles = ['superAdmin', 'domainAdmin', 'groupAdmin', 'user', 'admin'];
+
+/**
+* Field return for response user
+*/
+const fields = ['id', 'name', 'email', 'role', 'createdAt'];
 
 /**
  * User Schema
@@ -73,14 +79,7 @@ userSchema.pre('save', async function save(next) {
  */
 userSchema.method({
   transform() {
-    const transformed = {};
-    const fields = ['id', 'name', 'email', 'role', 'createdAt'];
-
-    fields.forEach((field) => {
-      transformed[field] = this[field];
-    });
-
-    return transformed;
+    return _.pick(this, fields);
   },
 
   token() {

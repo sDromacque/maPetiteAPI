@@ -7,7 +7,6 @@ module.exports = (err, req, res, next) => {
   let boomError = {};
   const joinError = err.message === 'validation error' ? 'joinError' : undefined;
 
-  console.log(err)
   switch (joinError || err.name) {
     case 'joinError': {
       const error = new Error(convertErrors(err.errors));

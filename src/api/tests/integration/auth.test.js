@@ -9,7 +9,7 @@ const RefreshToken = require('../../models/refreshToken.model');
 
 const sandbox = sinon.createSandbox();
 
-describe.skip('Authentication API', () => {
+describe('Authentication API', () => {
   let dbUser;
   let user;
   let refreshToken;

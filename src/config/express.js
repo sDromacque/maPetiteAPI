@@ -44,7 +44,6 @@ passport.use('jwt', strategies.jwt);
 app.use('/v1', routes);
 
 // Handle errors
-//app.use(require('../api/middlewares/handlerErrors/404.js'));
 app.use(require('../api/middlewares/handlerErrors/mongooseToBoom.js'));
 app.use(require('../api/middlewares/handlerErrors/boomHandler.js'));
 

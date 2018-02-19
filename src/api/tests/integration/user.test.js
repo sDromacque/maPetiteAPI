@@ -3,12 +3,10 @@
 const request = require('supertest');
 const httpStatus = require('http-status');
 const { expect } = require('chai');
-const sinon = require('sinon');
 const bcrypt = require('bcryptjs');
 const { some, omitBy, isNil } = require('lodash');
 const app = require('../../../index');
 const User = require('../../models/user.model');
-const JWT_EXPIRATION = require('../../../config/vars').jwtExpirationInterval;
 
 /**
  * root level hooks
@@ -290,7 +288,7 @@ describe('Users API', async () => {
   });
 
   describe('PATCH /v1/users/:userId', () => {
-    /*it('should update user', async () => {
+    /* it('should update user', async () => {
       delete dbUsers.jonSnow.password;
       const id = (await User.findOne(dbUsers.jonSnow))._id;
       const { name } = user;
@@ -307,9 +305,9 @@ describe('Users API', async () => {
           expect(res.body.name).to.be.equal(name);
           expect(res.body.email).to.be.equal(dbUsers.jonSnow.email);
         });
-    });*/
+    });
 
-   /*  it('should not update user when no parameters were given', async () => {
+    it('should not update user when no parameters were given', async () => {
       delete dbUsers.branStark.password;
       const id = (await User.findOne(dbUsers.branStark))._id;
 
@@ -363,7 +361,7 @@ describe('Users API', async () => {
   });
 
   describe('DELETE /v1/users', () => {
-   /*  it('should delete user', async () => {
+    /*  it('should delete user', async () => {
       const id = (await User.findOne({}))._id;
 
       return request(app)
