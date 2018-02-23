@@ -11,12 +11,6 @@ const {
 router
   .route('/')
   .get(authorize(SUPER_ADMIN), controller.list)
-  //.get(controller.listByDomain)
   .post(authorize(SUPER_ADMIN), controller.create);
 
-/* router
-  .route('/:domainId')
-  .get(controller.find)
-  .patch(controller.update);
- */
 module.exports = router;

@@ -49,6 +49,9 @@ const userSchema = new mongoose.Schema({
     enum: roles,
     default: 'user',
   },
+  domain: {
+    type: mongoose.Schema.Types.ObjectId, ref: 'Domain',
+  },
 }, {
   timestamps: true,
 });
