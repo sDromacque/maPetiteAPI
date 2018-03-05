@@ -16,6 +16,7 @@ const domainSchema = new mongoose.Schema({
   },
 }, {
   timestamps: true,
+  versionKey: false,
 });
 
 

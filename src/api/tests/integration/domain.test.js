@@ -4,35 +4,16 @@ const request = require('supertest');
 const httpStatus = require('http-status');
 const { expect } = require('chai');
 const bcrypt = require('bcryptjs');
-const { omitBy, isNil } = require('lodash');
 const app = require('../../../index');
 const User = require('../../models/user.model');
+const Domain = require('../../models/domain.model');
 
-/**
- * root level hooks
- */
-
-async function format(user) {
-  const formated = user;
-
-  // delete password
-  delete formated.password;
-
-  // get users from database
-  const dbUser = (await User.findOne({ email: user.email })).transform();
-
-  // remove null and undefined properties
-  return omitBy(dbUser, isNil);
-}
-
-describe('Users API', async () => {
+describe('Domains API', async () => {
   let adminAccessToken;
   let userAccessToken;
   let superAdminAccessToken;
   let dbUsers;
-  let user;
-  let admin;
-  let superAdmin;
+  let dbDomains;
 
   let domainValid;
 
@@ -40,6 +21,12 @@ describe('Users API', async () => {
   const passwordHashed = await bcrypt.hash(password, 1);
 
   beforeEach(async () => {
+    dbDomains = {
+      mel: {
+        name: 'toto',
+      },
+    };
+
     dbUsers = {
       branStark: {
         email: 'branstark@gmail.com',
@@ -66,6 +53,8 @@ describe('Users API', async () => {
 
     await User.remove({});
     await User.insertMany([dbUsers.branStark, dbUsers.jonSnow, dbUsers.gregorClegane]);
+    await Domain.remove({});
+    await Domain.insertMany([dbDomains.mel]);
     dbUsers.branStark.password = password;
     dbUsers.jonSnow.password = password;
     dbUsers.gregorClegane.password = password;
@@ -96,6 +85,30 @@ describe('Users API', async () => {
           expect(res.body).to.have.a.property('_id');
           expect(res.body).to.have.a.property('name');
           expect(res.body).to.have.a.property('isActive').to.be.a('boolean');
+        });
+    });
+  });
+
+  describe('GET /v1/domains', () => {
+    it('should return 403 when user is not superAdmin', () => {
+      return request(app)
+        .post('/v1/domains')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send(domainValid)
+        .expect(httpStatus.UNAUTHORIZED)
+        .then((res) => {
+          expect(res.body.message).to.be.equal('Unauthorized');
+        });
+    });
+
+    it('should return 200 when user is authorize', () => {
+      return request(app)
+        .get('/v1/domains')
+        .set('Authorization', `Bearer ${superAdminAccessToken}`)
+        .send(domainValid)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.be.an('array');
         });
     });
   });

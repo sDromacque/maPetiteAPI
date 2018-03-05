@@ -5,12 +5,12 @@ const Domain = require('../models/domain.model');
  * Get user
  * @public
  */
-exports.list = (req, res) => {
-  console.log('ok');
-};
-
-exports.listByDomain = (req, res) => {
-  console.log('ok');
+exports.list = (req, res, next) => {
+  Domain.find()
+    .then((results) => {
+      res.json(results);
+    })
+    .catch(next);
 };
 
 exports.create = async (req, res, next) => {
@@ -24,11 +24,16 @@ exports.create = async (req, res, next) => {
 };
 
 
-exports.find = (req, res) => {
-  console.log('ok');
+exports.find = (req, res, next) => {
+  Domain.find()
+    .then((results) => {
+      res.json(results);
+    })
+    .catch(next);
 };
 
+
 exports.update = (req, res) => {
-  console.log('ok');
+  res.json('ok update');
 };
 

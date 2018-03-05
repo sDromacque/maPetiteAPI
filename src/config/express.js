@@ -16,12 +16,13 @@ const strategies = require('./passport');
 */
 const app = express();
 
+
 // request logging. dev: console | production: file
 app.use(morgan(logs));
 
 // parse body params and attache them to req.body
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '5000mb' }));
+app.use(bodyParser.urlencoded({ limit: '5000mb', extended: true }));
 
 // gzip compression
 app.use(compress());

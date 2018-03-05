@@ -3,6 +3,7 @@ const userRoutes = require('./user.route');
 const authRoutes = require('./auth.route');
 const domainRoutes = require('./domain.route');
 const groupRoutes = require('./group.route');
+const shootRoutes = require('./shoot.route');
 
 const router = express.Router();
 
@@ -15,5 +16,6 @@ router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
 router.use('/domains', domainRoutes);
 router.use('/groups', groupRoutes);
+router.use('/shoots', shootRoutes);
 
 module.exports = router;

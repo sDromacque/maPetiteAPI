@@ -4,7 +4,7 @@ const controller = require('../../controllers/user.controller');
 const {
   authorize,
   ADMIN,
-  LOGGED_USER,
+  USER,
 } = require('../../middlewares/auth');
 
 const {
@@ -94,7 +94,7 @@ router
    * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can access the data
    * @apiError (Not Found 404)    NotFound     User does not exist
    */
-  .get(authorize(LOGGED_USER), controller.get)
+  .get(authorize(USER), controller.get)
   /**
    * @api {patch} v1/users/:id Update User
    * @apiDescription Update some fields of a user document
@@ -123,7 +123,7 @@ router
    * @apiError (Not Found 404)    NotFound     User does not exist
    * @apiError (Conflict 409)     Conflict     Duplicate email
    */
-  .patch(authorize(LOGGED_USER), validate(updateUser), controller.update)
+  .patch(authorize(USER), validate(updateUser), controller.update)
   /**
    * @api {patch} v1/users/:id Delete User
    * @apiDescription Delete a user
@@ -140,7 +140,7 @@ router
    * @apiError (Forbidden 403)    Forbidden     Only user with same id or admins can delete the data
    * @apiError (Not Found 404)    NotFound      User does not exist
    */
-  .delete(authorize(LOGGED_USER), controller.remove);
+  .delete(authorize(USER), controller.remove);
 
 
 module.exports = router;
