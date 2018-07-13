@@ -14,6 +14,17 @@ const domainSchema = new mongoose.Schema({
     required: true,
     default: true,
   },
+  informationDomain: {
+    urlTile: {
+      type: String,
+    },
+    layer: {
+      type: String,
+    },
+    delimitation: {
+      required: false,
+    },
+  },
 }, {
   timestamps: true,
   versionKey: false,
