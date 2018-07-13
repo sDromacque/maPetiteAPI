@@ -25,7 +25,7 @@ exports.create = async (req, res, next) => {
 
 
 exports.find = (req, res, next) => {
-  Domain.find()
+  Domain.findById(req.params.domainId)
     .then((results) => {
       res.json(results);
     })
