@@ -43,7 +43,6 @@ module.exports = (err, req, res, next) => {
       boomError = boom.badRequest(null, _.map(err.errors, 'path'));
       break;
     default: {
-      console.log(err)
       const error = new Error(err.output.payload.message);
       boomError = boom.boomify(error, {
         statusCode: err.output.statusCode,

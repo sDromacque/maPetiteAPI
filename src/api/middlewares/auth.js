@@ -28,9 +28,8 @@ const sameDomain = (req, res, next) => async (err, user) => {
   // TODO: find for convert params in objectID
   if (user.role === SUPER_ADMIN || user.domain.toString() === req.params.domainId) {
     res.json(httpStatus.CREATED);
-  } else {
-    return next(boom.unauthorized());
   }
+  return next(boom.unauthorized());
 };
 
 const handleJWT = (req, res, next, roles) => async (err, user, info) => {

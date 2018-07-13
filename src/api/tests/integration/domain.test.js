@@ -10,7 +10,6 @@ const Domain = require('../../models/domain.model');
 
 describe('Domains API', async () => {
   let adminAccessToken;
-  let userAccessToken;
   let superAdminAccessToken;
   let dbUsers;
   let dbDomains;
@@ -59,7 +58,6 @@ describe('Domains API', async () => {
     dbUsers.jonSnow.password = password;
     dbUsers.gregorClegane.password = password;
     adminAccessToken = (await User.findAndGenerateToken(dbUsers.branStark)).accessToken;
-    userAccessToken = (await User.findAndGenerateToken(dbUsers.jonSnow)).accessToken;
     superAdminAccessToken = (await User.findAndGenerateToken(dbUsers.gregorClegane)).accessToken;
   });
 
