@@ -1,10 +1,6 @@
 const httpStatus = require('http-status');
 const Domain = require('../models/domain.model');
 
-/**
- * Get user
- * @public
- */
 exports.list = (req, res, next) => {
   Domain.find()
     .then((results) => {
@@ -23,7 +19,6 @@ exports.create = async (req, res, next) => {
   }
 };
 
-
 exports.find = (req, res, next) => {
   Domain.findById(req.params.domainId)
     .then((results) => {
@@ -31,7 +26,6 @@ exports.find = (req, res, next) => {
     })
     .catch(next);
 };
-
 
 exports.update = (req, res) => {
   res.json('ok update');
