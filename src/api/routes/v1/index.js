@@ -12,10 +12,10 @@ const router = express.Router();
  */
 router.use('/docs', express.static('docs'));
 
-router.use('/users', userRoutes);
+router.use('/user', userRoutes);
 router.use('/auth', authRoutes);
-router.use('/domains', domainRoutes);
-router.use('/groups', groupRoutes);
-router.use('/shoots', shootRoutes);
+router.use('/domain', domainRoutes);
+router.use('/group', groupRoutes);
+router.use('/shoot', shootRoutes);
 
 module.exports = router;
